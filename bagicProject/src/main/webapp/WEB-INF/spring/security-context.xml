@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="AccessDenied" class="com.basic.demo.security.LoginSuccessHandler"></bean>
+	<bean id="DeniedHandler" class="com.basic.demo.security.DeniedHandler"></bean>
+	<bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	<bean id="customUserDetail" class="com.basic.demo.security.CustomUserDetailService" />
+
+	<security:http>
+		<!-- /security/all 이라는 url은 모든 권한을 가진 사람들이 접속이 가능 -->
+		<security:intercept-url pattern="/security/all" access="permitAll" />
+		<!-- /security/member 는 ROLE_MEMBER 권한을 가진 사람만 접속 가능 -->
+		<security:intercept-url pattern="/security/member" access="hasRole('ROLE_MEMBER')" />
+		<security:access-denied-handler ref="DeniedHandler" />
+		<security:form-login login-page="/login" 
+			authentication-success-handler-ref="AccessDenied" />
+	</security:http>
+	
+	<security:authentication-manager>
+		<security:authentication-provider user-service-ref="customUserDetails">
+			<security:password-encoder ref="bcryptPasswordEncoder" />
+<!--            <security:user name="member" password="{noop}member" authorities="ROLE_MEMBER"/>
+           DB를 연결 하지 않고 구현하기 위한 member권한 아이디 설정 -->
+		</security:authentication-provider>
+	</security:authentication-manager>
+	
+</beans>

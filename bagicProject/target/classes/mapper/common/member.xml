@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Member">
+
+	<resultMap type="MemberVO" id="memberMap">
+		<id property="id" column="userid" />
+		<result property="id" column="userid" />
+		<result property="password" column="userpw" />
+		<result property="userName" column="username" />
+		<result property="regdate" column="regdate" />
+		<collection property="authList" resultMap="authMap"></collection>
+	</resultMap>
+
+	<resultMap type="AuthVO" id="authMap">
+		<result property="userid" column="userid" />
+		<result property="auth" column="auth" />
+	</resultMap>
+
+    <select id="Login"  parameterType="String" resultMap="memberMap">
+        SELECT a.userid userid, 
+        		a.userpw userpw,
+             	a.username username,
+             	a.regdate regdate,
+             	a.enabled,
+             	b.auth as auth
+         from users a 
+         	LEFT JOIN authorities b 
+         	  ON a.userid= b.userid
+        where a.userid = #{userid}
+    </select>
+
+</mapper>
